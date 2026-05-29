@@ -9,7 +9,7 @@ import { COURSE_STATUS } from "../../../../../Util/constants"
 import IconBtn from "../../../../Common/IconBtn"
 
 export default function PublishCourse() {
-  const { register, handleSubmit, setValue, getValues, watch } = useForm()
+  const { register, handleSubmit, setValue, watch } = useForm()
 
   const dispatch = useDispatch()
   const navigate = useNavigate()
@@ -23,7 +23,7 @@ export default function PublishCourse() {
     if (course?.status === COURSE_STATUS.PUBLISHED) {
       setValue("public", true)
     }
-  }, [])
+  }, [course?.status, setValue])
 
   const goBack = () => {
     dispatch(setStep(2))

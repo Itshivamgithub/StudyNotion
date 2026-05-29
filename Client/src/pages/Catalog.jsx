@@ -5,8 +5,8 @@ import { useParams } from "react-router-dom"
 
 
 import Footer from "../Component/Common/Footer"
-import Course_Card from "../Component/Core/Catalog/Course_Card"
-import Course_Slider from "../Component/Core/Catalog/Course_Slider"
+import CourseCard from "../Component/Core/Catalog/Course_Card"
+import CourseSlider from "../Component/Core/Catalog/Course_Slider"
 import { apiConnector } from "../Service/apiConnector"
 import { categories } from "../Service/apis"
 import { getCatalogPageData } from "../Service/Operation/pageAndComponntDatas"
@@ -105,7 +105,7 @@ function Catalog() {
           </p>
         </div>
         <div>
-          <Course_Slider
+          <CourseSlider
             Courses={catalogPageData?.data?.selectedCategory?.courses}
           />
         </div>
@@ -116,7 +116,7 @@ function Catalog() {
           Top courses in {catalogPageData?.data?.differentCategory?.name}
         </div>
         <div className="py-8">
-          <Course_Slider
+          <CourseSlider
             Courses={catalogPageData?.data?.differentCategory?.courses}
           />
         </div>
@@ -130,7 +130,7 @@ function Catalog() {
             {catalogPageData?.data?.mostSellingCourses
               ?.slice(0, 4)
               .map((course, i) => (
-                <Course_Card course={course} key={i} Height={"h-[400px]"} />
+                <CourseCard course={course} key={i} Height={"h-[400px]"} />
               ))}
           </div>
         </div>

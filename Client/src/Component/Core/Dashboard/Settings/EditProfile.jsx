@@ -13,7 +13,6 @@ export default function EditProfile() {
   const { token } = useSelector((state) => state.auth)
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  const [loading, setLoading] = useState(false);
   const {
     register,
     handleSubmit,
@@ -173,11 +172,9 @@ export default function EditProfile() {
 
 
         <div className='flex justify-end gap-2'>
-          <button onClick={() => navigate('/dashboard/my-profile')} className={`rounded-md bg-richblack-700 lg:py-2 py-1 lg:px-5 px-2 font-semibold text-richblack-50 uppercase tracking-wider 
-          ${loading ? 'cursor-not-allowed' : 'cursor-pointer'}
-          `}>Cancel</button>
+          <button onClick={() => navigate('/dashboard/my-profile')} className={`rounded-md bg-richblack-700 lg:py-2 py-1 lg:px-5 px-2 font-semibold text-richblack-50 uppercase tracking-wider cursor-pointer`}>Cancel</button>
 
-          <IconBtn type={'submit'} disabled={loading} text={loading ? 'Saving...' : 'Save'} customClasses='lg:py-2 lg:px-5'/>
+          <IconBtn type={'submit'} text={'Save'} customClasses='lg:py-2 lg:px-5'/>
         </div>
 
       </form>

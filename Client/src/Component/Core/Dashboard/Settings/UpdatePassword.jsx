@@ -10,7 +10,6 @@ import IconBtn from "../../../Common/IconBtn"
 export default function UpdatePassword() {
   const { token } = useSelector((state) => state.auth)
   const navigate = useNavigate()
-  const [loading, setLoading] = useState(false);
   const [showOldPassword, setShowOldPassword] = useState(false)
   const [showNewPassword, setShowNewPassword] = useState(false)
 
@@ -107,11 +106,9 @@ export default function UpdatePassword() {
 
 
         <div className='flex justify-end gap-2'>
-          <button onClick={() => navigate('/dashboard/my-profile')} className={`rounded-md bg-richblack-700 lg:py-2 py-1 lg:px-5 px-2 font-semibold text-richblack-50 uppercase tracking-wider 
-          ${loading ? 'cursor-not-allowed' : 'cursor-pointer'}
-          `}>Cancel</button>
+          <button onClick={() => navigate('/dashboard/my-profile')} className={`rounded-md bg-richblack-700 lg:py-2 py-1 lg:px-5 px-2 font-semibold text-richblack-50 uppercase tracking-wider cursor-pointer`}>Cancel</button>
 
-          <IconBtn type={'submit'} disabled={loading} customClasses={`${loading} lg:py-2 lg:px-5`} text={loading ? 'Updating...' : 'Update'} />
+          <IconBtn type={'submit'} customClasses={`lg:py-2 lg:px-5`} text={'Update'} />
         </div>
 
       </form>

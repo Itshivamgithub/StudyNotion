@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from "react-redux"
 import { useParams } from "react-router-dom"
 
 import {
-  fetchCourseDetails,
   getFullDetailsOfCourse,
 } from "../../../../Service/Operation/courseDetailsAPI"
 import { setCourse, setEditCourse } from "../../../../Slice/courseSlice"
