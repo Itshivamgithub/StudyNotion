@@ -192,16 +192,22 @@ exports.sendotp = async (req, res) => {
       result = await OTP.findOne({ otp: otp });
     }
     const otpPayload = { email, otp };
+    console.log("Creating OTP document for:", email);
     const otpBody = await OTP.create(otpPayload);
-    console.log("OTP Body", otpBody);
+    console.log("OTP Body created successfully:", otpBody);
+    
     res.status(200).json({
       success: true,
       message: `OTP Sent Successfully`,
       otp,
     });
   } catch (error) {
-    console.error("Error in sendotp:", error);
-    return res.status(500).json({ success: false, error: error.message });
+    console.error("Error in sendotp:", error.message);
+    return res.status(500).json({ 
+      success: false, 
+      message: error.message,
+      error: error.message 
+    });
   }
 };
 
