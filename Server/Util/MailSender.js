@@ -3,9 +3,15 @@ require("dotenv").config();
 
 const mailSender = async (email, title, body) => {
   try {
+    console.log("--- Mail Configuration Check ---");
+    console.log("MAIL_HOST present:", !!process.env.MAIL_HOST);
+    console.log("MAIL_USER present:", !!process.env.MAIL_USER);
+    console.log("MAIL_PASS present:", !!process.env.MAIL_PASS);
+    console.log("-------------------------------");
+
     if (!process.env.MAIL_HOST || !process.env.MAIL_USER || !process.env.MAIL_PASS) {
       console.error("CRITICAL: Mail configuration is missing from environment variables.");
-      throw new Error("Mail configuration missing");
+      throw new Error("Mail configuration missing. Please check Render Environment Variables.");
     }
 
     let transporter = nodemailer.createTransport({
