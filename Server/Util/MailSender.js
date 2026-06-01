@@ -3,8 +3,10 @@ require("dotenv").config();
 
 const mailSender = async (email, title, body) => {
   try {
+    const host = process.env.MAIL_HOST || "";
     console.log("--- Mail Configuration Check ---");
-    console.log("MAIL_HOST present:", !!process.env.MAIL_HOST);
+    console.log("MAIL_HOST starts with:", host.substring(0, 4));
+    console.log("MAIL_HOST length:", host.length);
     console.log("MAIL_USER present:", !!process.env.MAIL_USER);
     console.log("MAIL_PASS present:", !!process.env.MAIL_PASS);
     console.log("-------------------------------");
@@ -17,14 +19,19 @@ const mailSender = async (email, title, body) => {
     let transporter = nodemailer.createTransport({
       host: process.env.MAIL_HOST,
       port: 587,
-      secure: false, // Use STARTTLS
+      secure: false,
       auth: {
         user: process.env.MAIL_USER,
         pass: process.env.MAIL_PASS,
       },
+      debug: true, // Show debug output
+      logger: true, // Log information to console
+      connectionTimeout: 15000, // 15 seconds
+      greetingTimeout: 15000,
     });
 
-    console.log(`Attempting to send email to: ${email}`);
+    console.log(`Attempting to send email to: ${email} using ${process.env.MAIL_HOST}:587`);
+
     
     let info = await transporter.sendMail({
       from: `"StudyNotion" <${process.env.MAIL_USER}>`,
