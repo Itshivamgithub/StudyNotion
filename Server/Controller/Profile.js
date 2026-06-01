@@ -120,13 +120,21 @@ exports.updateDisplayPicture = async (req, res) => {
     }
     const displayPicture = req.files.displayPicture;
     const userId = req.user.id;
+
+    if (!displayPicture.tempFilePath) {
+      console.error("Temp file path is missing from uploaded file.");
+      return res.status(500).json({
+        success: false,
+        message: "Server error: Failed to process uploaded file.",
+      });
+    }
     
     console.log("Starting image upload to Cloudinary...");
     const image = await uploadImageToCloudinary(
       displayPicture,
       process.env.FOLDER_NAME || "StudyNotion",
       1000,
-      1000
+      100 // Quality should be 1-100
     );
     console.log("Image uploaded to Cloudinary:", image.secure_url);
     
@@ -142,11 +150,11 @@ exports.updateDisplayPicture = async (req, res) => {
       data: updatedProfile,
     });
   } catch (error) {
-    console.error("Error in updateDisplayPicture:", error.message);
+    console.error("Error in updateDisplayPicture:", error);
     return res.status(500).json({
       success: false,
       message: "Could not update display picture. Check server logs for details.",
-      error: error.message,
+      error: error.message || JSON.stringify(error),
     });
   }
 };
