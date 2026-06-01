@@ -186,6 +186,8 @@ exports.sendotp = async (req, res) => {
     while (result) {
       otp = otpGenerator.generate(6, {
         upperCaseAlphabets: false,
+        lowerCaseAlphabets: false,
+        specialChars: false,
       });
       result = await OTP.findOne({ otp: otp });
     }
