@@ -17,20 +17,16 @@ const mailSender = async (email, title, body) => {
     }
 
     let transporter = nodemailer.createTransport({
-      host: process.env.MAIL_HOST,
-      port: 587,
-      secure: false,
+      service: "gmail",
       auth: {
         user: process.env.MAIL_USER,
         pass: process.env.MAIL_PASS,
       },
-      debug: true, // Show debug output
-      logger: true, // Log information to console
-      connectionTimeout: 15000, // 15 seconds
-      greetingTimeout: 15000,
+      debug: true,
+      logger: true,
     });
 
-    console.log(`Attempting to send email to: ${email} using ${process.env.MAIL_HOST}:587`);
+    console.log(`Attempting to send email to: ${email} using Gmail service`);
 
     
     let info = await transporter.sendMail({
