@@ -115,32 +115,38 @@ exports.updateDisplayPicture = async (req, res) => {
     if (!req.files || !req.files.displayPicture) {
       return res.status(400).json({
         success: false,
-        message: "No file uploaded",
+        message: "No file uploaded. Please select an image.",
       });
     }
     const displayPicture = req.files.displayPicture;
     const userId = req.user.id;
+    
+    console.log("Starting image upload to Cloudinary...");
     const image = await uploadImageToCloudinary(
       displayPicture,
-      process.env.FOLDER_NAME,
+      process.env.FOLDER_NAME || "StudyNotion",
       1000,
       1000
     );
-    console.log(image);
+    console.log("Image uploaded to Cloudinary:", image.secure_url);
+    
     const updatedProfile = await User.findByIdAndUpdate(
       { _id: userId },
       { image: image.secure_url },
       { new: true }
     ).populate("additionalDetails")
+    
     res.send({
       success: true,
       message: `Image Updated successfully`,
       data: updatedProfile,
     });
   } catch (error) {
+    console.error("Error in updateDisplayPicture:", error.message);
     return res.status(500).json({
       success: false,
-      message: error.message,
+      message: "Could not update display picture. Check server logs for details.",
+      error: error.message,
     });
   }
 };
