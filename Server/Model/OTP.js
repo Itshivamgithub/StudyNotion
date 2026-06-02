@@ -27,13 +27,16 @@ async function sendVerificationEmail(email, otp) {
   }
 }
 
-OTPSchema.pre("save", async function () {
-  console.log("New document saved to database");
-
+OTPSchema.pre("save", async function (next) {
   // Only send an email when a new document is created
   if (this.isNew) {
-    await sendVerificationEmail(this.email, this.otp);
+    console.log("Sending verification email for:", this.email);
+    // Don't await here to prevent the request from hanging if mail server is slow
+    sendVerificationEmail(this.email, this.otp).catch((error) => {
+      console.error("Error occurred while sending verification email:", error);
+    });
   }
+  next();
 });
 
 const OTP = mongoose.model("OTP", OTPSchema);
