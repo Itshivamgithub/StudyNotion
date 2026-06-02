@@ -17,18 +17,17 @@ const mailSender = async (email, title, body) => {
     }
 
     let transporter = nodemailer.createTransport({
-      service: "gmail",
+      host: process.env.MAIL_HOST,
+      port: 465,
+      secure: true,
       auth: {
         user: process.env.MAIL_USER,
         pass: process.env.MAIL_PASS,
       },
-      debug: true,
-      logger: true,
     });
 
-    console.log(`Attempting to send email to: ${email} using Gmail service`);
+    console.log(`Attempting to send email to: ${email} using ${process.env.MAIL_HOST}`);
 
-    
     let info = await transporter.sendMail({
       from: `"StudyNotion" <${process.env.MAIL_USER}>`,
       to: `${email}`,
