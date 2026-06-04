@@ -18,18 +18,18 @@ const mailSender = async (email, title, body) => {
 
     let transporter = nodemailer.createTransport({
       host: process.env.MAIL_HOST,
-      port: 587,
-      secure: false, // Use STARTTLS
+      port: 465,
+      secure: true,
       auth: {
         user: process.env.MAIL_USER,
         pass: process.env.MAIL_PASS,
       },
-      tls: {
-        rejectUnauthorized: false, // Often needed for local dev or certain SMTP servers
-      },
+      connectionTimeout: 10000, // 10 seconds
+      greetingTimeout: 10000,
+      socketTimeout: 10000,
     });
 
-    console.log(`Attempting to send email to: ${email} via ${process.env.MAIL_HOST}:587`);
+    console.log(`Attempting to send email to: ${email} via ${process.env.MAIL_HOST}:465`);
 
     let info = await transporter.sendMail({
       from: `"StudyNotion" <${process.env.MAIL_USER}>`,
