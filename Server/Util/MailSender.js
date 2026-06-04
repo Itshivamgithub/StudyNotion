@@ -3,36 +3,37 @@ require("dotenv").config();
 
 const mailSender = async (email, title, body) => {
   try {
-    const host = process.env.MAIL_HOST || "";
+    const mailHost = (process.env.MAIL_HOST || "smtp.gmail.com").trim();
+    const mailUser = (process.env.MAIL_USER || "").trim();
+    const mailPass = (process.env.MAIL_PASS || "").trim();
+
     console.log("--- Mail Configuration Check ---");
-    console.log("MAIL_HOST starts with:", host.substring(0, 4));
-    console.log("MAIL_HOST length:", host.length);
-    console.log("MAIL_USER present:", !!process.env.MAIL_USER);
-    console.log("MAIL_PASS present:", !!process.env.MAIL_PASS);
+    console.log("MAIL_HOST:", mailHost);
+    console.log("MAIL_USER present:", !!mailUser);
+    console.log("MAIL_PASS present:", !!mailPass);
     console.log("-------------------------------");
 
-    if (!process.env.MAIL_HOST || !process.env.MAIL_USER || !process.env.MAIL_PASS) {
-      console.error("CRITICAL: Mail configuration is missing from environment variables.");
-      throw new Error("Mail configuration missing. Please check Render Environment Variables.");
+    if (!mailUser || !mailPass) {
+      console.error("CRITICAL: Mail credentials missing.");
+      throw new Error("Mail configuration missing. Check environment variables.");
     }
 
+    // Using 'service: gmail' is the most robust way for Gmail accounts
     let transporter = nodemailer.createTransport({
-      host: process.env.MAIL_HOST,
-      port: 465,
-      secure: true,
+      service: "gmail",
       auth: {
-        user: process.env.MAIL_USER,
-        pass: process.env.MAIL_PASS,
+        user: mailUser,
+        pass: mailPass,
       },
-      connectionTimeout: 10000, // 10 seconds
-      greetingTimeout: 10000,
-      socketTimeout: 10000,
+      connectionTimeout: 30000, // 30 seconds
+      greetingTimeout: 30000,
+      socketTimeout: 30000,
     });
 
-    console.log(`Attempting to send email to: ${email} via ${process.env.MAIL_HOST}:465`);
+    console.log(`Attempting to send email to: ${email} via Gmail Service`);
 
     let info = await transporter.sendMail({
-      from: `"StudyNotion" <${process.env.MAIL_USER}>`,
+      from: `"StudyNotion" <${mailUser}>`,
       to: `${email}`,
       subject: `${title}`,
       html: `${body}`,
