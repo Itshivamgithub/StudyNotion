@@ -92,6 +92,8 @@ exports.signup = async (req, res) => {
       image: "",
     });
 
+    user.password = undefined;
+
     return res.status(200).json({
       success: true,
       user,

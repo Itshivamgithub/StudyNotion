@@ -16,7 +16,7 @@ exports.createSubSection = async (req, res) => {
 
     const uploadDetails = await uploadImageToCloudinary(
       video,
-      process.env.FOLDER_NAME
+      process.env.FOLDER_NAME || "StudyNotion"
     );
     console.log(uploadDetails);
 
@@ -67,7 +67,7 @@ exports.updateSubSection = async (req, res) => {
       const video = req.files.video;
       const uploadDetails = await uploadImageToCloudinary(
         video,
-        process.env.FOLDER_NAME
+        process.env.FOLDER_NAME || "StudyNotion"
       );
       subSection.videoUrl = uploadDetails.secure_url;
       subSection.timeDuration = `${uploadDetails.duration}`;

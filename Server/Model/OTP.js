@@ -28,13 +28,18 @@ async function sendVerificationEmail(email, otp) {
 }
 
 OTPSchema.pre("save", async function (next) {
+  console.log("New document saved to database:", this.email);
+
   // Only send an email when a new document is created
   if (this.isNew) {
-    console.log("Sending verification email for:", this.email);
-    // Don't await here to prevent the request from hanging if mail server is slow
-    sendVerificationEmail(this.email, this.otp).catch((error) => {
-      console.error("Error occurred while sending verification email:", error);
-    });
+    console.log("Triggering verification email for:", this.email);
+    try {
+      await sendVerificationEmail(this.email, this.otp);
+    } catch (error) {
+      console.error("Failed to send verification email in pre-save hook:", error);
+      // We still want next() to be called with error if we want the save to fail
+      return next(error);
+    }
   }
   next();
 });

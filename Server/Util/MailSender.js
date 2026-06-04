@@ -18,15 +18,18 @@ const mailSender = async (email, title, body) => {
 
     let transporter = nodemailer.createTransport({
       host: process.env.MAIL_HOST,
-      port: 465,
-      secure: true,
+      port: 587,
+      secure: false, // Use STARTTLS
       auth: {
         user: process.env.MAIL_USER,
         pass: process.env.MAIL_PASS,
       },
+      tls: {
+        rejectUnauthorized: false, // Often needed for local dev or certain SMTP servers
+      },
     });
 
-    console.log(`Attempting to send email to: ${email} using ${process.env.MAIL_HOST}`);
+    console.log(`Attempting to send email to: ${email} via ${process.env.MAIL_HOST}:587`);
 
     let info = await transporter.sendMail({
       from: `"StudyNotion" <${process.env.MAIL_USER}>`,
@@ -35,7 +38,7 @@ const mailSender = async (email, title, body) => {
       html: `${body}`,
     });
 
-    console.log("Email info: ", info);
+    console.log("Email sent successfully. Message ID:", info.messageId);
     return info;
   } catch (error) {
     console.error("Error occurred while sending mail in mailSender.js:", error.message);

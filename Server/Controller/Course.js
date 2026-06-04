@@ -66,7 +66,7 @@ exports.createCourse = async (req, res) => {
 
     const thumbnailImage = await uploadImageToCloudinary(
       thumbnail,
-      process.env.FOLDER_NAME
+      process.env.FOLDER_NAME || "StudyNotion"
     );
 
     const newCourse = await Course.create({
@@ -132,7 +132,7 @@ exports.editCourse = async (req, res) => {
       const thumbnail = req.files.thumbnailImage;
       const thumbnailImage = await uploadImageToCloudinary(
         thumbnail,
-        process.env.FOLDER_NAME
+        process.env.FOLDER_NAME || "StudyNotion"
       );
       course.thumbnail = thumbnailImage.secure_url;
     }
