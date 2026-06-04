@@ -22,25 +22,26 @@ const PORT = process.env.PORT || 4000;
 // Connect to database
 database.connect();
 
-// Middleware
-app.use(express.json());
-app.use(cookieParser());
-
-// CORS configuration - Must be before helmet and other routes
-const allowedOrigins = process.env.FRONTEND_URL 
-  ? process.env.FRONTEND_URL.split(",") 
-  : ["http://localhost:3000", "https://study-notion-nu-green.vercel.app"];
-
+// 1. CORS - MUST BE FIRST
 app.use(
   cors({
     origin: function (origin, callback) {
-      // allow requests with no origin (like mobile apps or curl requests)
-      if (!origin) return callback(null, true);
-      if (allowedOrigins.indexOf(origin) === -1) {
-        const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-        return callback(new Error(msg), false);
+      console.log("Request Origin:", origin);
+      const allowedOrigins = [
+        "http://localhost:3000",
+        "https://study-notion-nu-green.vercel.app",
+        "https://studynotion-edtech-project.vercel.app"
+      ];
+      if (process.env.FRONTEND_URL) {
+        allowedOrigins.push(...process.env.FRONTEND_URL.split(","));
       }
-      return callback(null, true);
+      
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        console.error("CORS Blocked for Origin:", origin);
+        callback(new Error("Not allowed by CORS"));
+      }
     },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
@@ -48,7 +49,13 @@ app.use(
   })
 );
 
-app.use(helmet());
+// 2. Other Middlewares
+app.use(express.json());
+app.use(cookieParser());
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+  crossOriginEmbedderPolicy: false,
+}));
 app.use(compression());
 app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
 app.use(
