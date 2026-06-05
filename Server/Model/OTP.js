@@ -32,12 +32,10 @@ OTPSchema.pre("save", async function (next) {
 
   // Only send an email when a new document is created
   if (this.isNew) {
-    console.log("Triggering verification email for:", this.email);
     try {
       await sendVerificationEmail(this.email, this.otp);
     } catch (error) {
-      console.error("Failed to send verification email in pre-save hook:", error);
-      // We still want next() to be called with error if we want the save to fail
+      console.error("Error occurred while sending verification email:", error);
       return next(error);
     }
   }

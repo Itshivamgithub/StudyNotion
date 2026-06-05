@@ -18,19 +18,36 @@ const mailSender = async (email, title, body) => {
       throw new Error("Mail configuration missing. Check environment variables.");
     }
 
-    // Using 'service: gmail' is the most robust way for Gmail accounts
-    let transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: mailUser,
-        pass: mailPass,
-      },
-      connectionTimeout: 30000, // 30 seconds
-      greetingTimeout: 30000,
-      socketTimeout: 30000,
-    });
+    let transporterConfig;
 
-    console.log(`Attempting to send email to: ${email} via Gmail Service`);
+    if (mailHost === "smtp.gmail.com") {
+      transporterConfig = {
+        host: "smtp.gmail.com",
+        port: 465,
+        secure: true, // Use SSL/TLS
+        auth: {
+          user: mailUser,
+          pass: mailPass,
+        },
+      };
+    } else {
+      transporterConfig = {
+        host: mailHost,
+        port: 587,
+        secure: false,
+        auth: {
+          user: mailUser,
+          pass: mailPass,
+        },
+        tls: {
+          rejectUnauthorized: false,
+        },
+      };
+    }
+
+    let transporter = nodemailer.createTransport(transporterConfig);
+
+    console.log(`Attempting to send email to: ${email} using ${mailHost === "smtp.gmail.com" ? "Gmail Service" : mailHost}`);
 
     let info = await transporter.sendMail({
       from: `"StudyNotion" <${mailUser}>`,

@@ -3,6 +3,7 @@ const User = require("../Model/User");
 const OTP = require("../Model/OTP");
 const jwt = require("jsonwebtoken");
 const otpGenerator = require("otp-generator");
+const { generate } = otpGenerator;
 const mailSender = require("../Util/MailSender");
 const { passwordUpdated } = require("../Mail/Template/PasswordUpdate");
 const Profile = require("../Model/Profile");
@@ -10,7 +11,7 @@ require("dotenv").config();
 
 exports.signup = async (req, res) => {
   try {
-    const {
+    let {
       firstName,
       lastName,
       email,
@@ -34,6 +35,8 @@ exports.signup = async (req, res) => {
         message: "All Fields are required",
       });
     }
+
+    email = email.toLowerCase();
 
     if (password !== confirmPassword) {
       return res.status(400).json({
@@ -110,7 +113,7 @@ exports.signup = async (req, res) => {
 
 exports.login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    let { email, password } = req.body;
 
     if (!email || !password) {
       return res.status(400).json({
@@ -118,6 +121,8 @@ exports.login = async (req, res) => {
         message: `Please Fill up All the Required Fields`,
       });
     }
+
+    email = email.toLowerCase();
 
     const user = await User.findOne({ email }).populate("additionalDetails");
 
@@ -168,7 +173,14 @@ exports.login = async (req, res) => {
 
 exports.sendotp = async (req, res) => {
   try {
-    const { email } = req.body;
+    let { email } = req.body;
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: "Email is required",
+      });
+    }
+    email = email.toLowerCase();
 
     const checkUserPresent = await User.findOne({ email });
 
@@ -179,18 +191,29 @@ exports.sendotp = async (req, res) => {
       });
     }
 
-    let otp = otpGenerator.generate(6, {
-      upperCaseAlphabets: false,
-      lowerCaseAlphabets: false,
-      specialChars: false,
-    });
-    let result = await OTP.findOne({ otp: otp });
-    while (result) {
+    let otp;
+    try {
       otp = otpGenerator.generate(6, {
         upperCaseAlphabets: false,
         lowerCaseAlphabets: false,
         specialChars: false,
       });
+    } catch (err) {
+      console.log("OTP Generator failed, using fallback");
+      otp = Math.floor(100000 + Math.random() * 900000).toString();
+    }
+
+    let result = await OTP.findOne({ otp: otp });
+    while (result) {
+      try {
+        otp = otpGenerator.generate(6, {
+          upperCaseAlphabets: false,
+          lowerCaseAlphabets: false,
+          specialChars: false,
+        });
+      } catch (err) {
+        otp = Math.floor(100000 + Math.random() * 900000).toString();
+      }
       result = await OTP.findOne({ otp: otp });
     }
     const otpPayload = { email, otp };
