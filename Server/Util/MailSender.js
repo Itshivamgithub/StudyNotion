@@ -20,9 +20,12 @@ const mailSender = async (email, title, body) => {
 
     let transporterConfig;
 
+    // Standard configuration for Gmail on port 587 (most reliable for cloud providers like Render)
     if (mailHost === "smtp.gmail.com" || mailHost.includes("googlemail.com")) {
       transporterConfig = {
-        service: "gmail",
+        host: "smtp.gmail.com",
+        port: 587,
+        secure: false, // Use STARTTLS
         auth: {
           user: mailUser,
           pass: mailPass,
@@ -32,7 +35,7 @@ const mailSender = async (email, title, body) => {
       transporterConfig = {
         host: mailHost,
         port: 587,
-        secure: false, // Use STARTTLS
+        secure: false,
         auth: {
           user: mailUser,
           pass: mailPass,
@@ -45,9 +48,9 @@ const mailSender = async (email, title, body) => {
 
     let transporter = nodemailer.createTransport({
       ...transporterConfig,
-      connectionTimeout: 10000, // 10 seconds timeout
-      greetingTimeout: 10000,
-      socketTimeout: 10000,
+      connectionTimeout: 15000, // Increase to 15 seconds
+      greetingTimeout: 15000,
+      socketTimeout: 15000,
     });
 
     console.log(`Attempting to send email to: ${email} using ${mailHost.includes("gmail") ? "Gmail Service" : mailHost}`);
