@@ -217,20 +217,30 @@ exports.sendotp = async (req, res) => {
       result = await OTP.findOne({ otp: otp });
     }
     const otpPayload = { email, otp };
-    console.log("Creating OTP document for:", email);
-    const otpBody = await OTP.create(otpPayload);
-    console.log("OTP Body created successfully:", otpBody);
+    console.log("Attempting to create OTP document for:", email);
     
-    res.status(200).json({
-      success: true,
-      message: `OTP Sent Successfully`,
-      otp,
-    });
+    try {
+      const otpBody = await OTP.create(otpPayload);
+      console.log("OTP Document created successfully:", otpBody);
+      
+      return res.status(200).json({
+        success: true,
+        message: `OTP Sent Successfully`,
+        otp,
+      });
+    } catch (otpError) {
+      console.error("Error while creating/saving OTP document:", otpError.message);
+      return res.status(500).json({
+        success: false,
+        message: "Failed to process OTP. Please check mail configuration or try again.",
+        error: otpError.message
+      });
+    }
   } catch (error) {
-    console.error("Error in sendotp:", error.message);
+    console.error("Error in sendotp controller:", error.message);
     return res.status(500).json({ 
       success: false, 
-      message: error.message,
+      message: "Internal Server Error in sendotp",
       error: error.message 
     });
   }

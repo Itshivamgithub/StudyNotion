@@ -20,11 +20,9 @@ const mailSender = async (email, title, body) => {
 
     let transporterConfig;
 
-    if (mailHost === "smtp.gmail.com") {
+    if (mailHost === "smtp.gmail.com" || mailHost.includes("googlemail.com")) {
       transporterConfig = {
-        host: "smtp.gmail.com",
-        port: 465,
-        secure: true, // Use SSL/TLS
+        service: "gmail",
         auth: {
           user: mailUser,
           pass: mailPass,
@@ -34,7 +32,7 @@ const mailSender = async (email, title, body) => {
       transporterConfig = {
         host: mailHost,
         port: 587,
-        secure: false,
+        secure: false, // Use STARTTLS
         auth: {
           user: mailUser,
           pass: mailPass,
@@ -45,9 +43,14 @@ const mailSender = async (email, title, body) => {
       };
     }
 
-    let transporter = nodemailer.createTransport(transporterConfig);
+    let transporter = nodemailer.createTransport({
+      ...transporterConfig,
+      connectionTimeout: 10000, // 10 seconds timeout
+      greetingTimeout: 10000,
+      socketTimeout: 10000,
+    });
 
-    console.log(`Attempting to send email to: ${email} using ${mailHost === "smtp.gmail.com" ? "Gmail Service" : mailHost}`);
+    console.log(`Attempting to send email to: ${email} using ${mailHost.includes("gmail") ? "Gmail Service" : mailHost}`);
 
     let info = await transporter.sendMail({
       from: `"StudyNotion" <${mailUser}>`,
